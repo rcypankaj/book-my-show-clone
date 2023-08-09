@@ -1,0 +1,17 @@
+.backdrop {
+  display: block;
+  opacity: 1;
+}
+
+.modal {
+  opacity: 1;
+  display: block;
+}
+
+.search-backdrop {
+  display: block;
+}
+
+.search-modal {
+  display: block;
+}
