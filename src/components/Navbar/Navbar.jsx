@@ -267,7 +267,6 @@ const NavLg = () => {
         const response = await axios.get(
           `/search/movie?query=${inputMovieName}`
         );
-        console.log(response.data.results);
         setFetchedMovies(response.data.results);
         setIsLoading(false);
         setError(false);
