@@ -51,8 +51,8 @@ const HomePage = () => {
   }, []);
   return (
     <Fragment>
-      {/* <HeroCarousel /> */}
-      {/* <div className="container mx-auto px-4 md:px-12 my-8">
+      <HeroCarousel />
+      <div className="container mx-auto px-4 md:px-12 my-8">
         <h1 className="text-2xl font-bold text-gray-800 sm:ml-3 ml-0 my-3">
           The Best of Entertainment
         </h1>
@@ -91,7 +91,7 @@ const HomePage = () => {
           posters={onlineStreamEvents}
           isDark={false}
         />
-      </div> */}
+      </div>
     </Fragment>
   );
 };

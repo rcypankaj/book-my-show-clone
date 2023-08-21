@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect, useContext, Fragment } from "react";
 import { BiSearch } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
@@ -125,15 +126,45 @@ const NavMd = () => {
 const NavLg = () => {
   const { isLoggedIn, setIsLoggedIn } = useContext(MovieContext);
   const { loginClasses, setLoginClasses } = useContext(MovieContext);
-  const [inputMovieName, setInputMovieName] = useState();
+  const [inputMovieName, setInputMovieName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchedMovies, setFetchedMovies] = useState([]);
+  const [error, setError] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchedMovie = async () => {
+      try {
+        const response = await axios.get(
+          `/search/movie?query=${inputMovieName}`
+        );
+        console.log(response.data.results);
+        setFetchedMovies(response.data.results);
+        setIsLoading(false);
+        setError(false);
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setError(true);
+      }
+    };
+
+    if (inputMovieName.length > 0) {
+      setIsLoading(true);
+      const debounceTimeout = setTimeout(fetchedMovie, 1000);
+      return () => clearTimeout(debounceTimeout);
+    } else {
+      setFetchedMovies([]);
+      setIsLoading(false);
+    }
+  }, [inputMovieName]);
 
   useEffect(() => {
     if (localStorage.getItem("displayName")) {
       setIsLoggedIn(true);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, setIsLoggedIn]);
 
   const handleClickLogin = () => {
     setLoginClasses({ backDrop: "backdrop", modal: "modal" });
@@ -155,10 +186,16 @@ const NavLg = () => {
     setInputMovieName("");
   };
 
+  const filteredMovieHandler = () => {
+    setInputMovieName("");
+    setFetchedMovies([]);
+    navigate("/filterMovie", { state: inputMovieName });
+  };
+
   return (
     <Fragment>
-      <div className="container flex mx-auto px-4 items-center justify-between">
-        <div className="flex items-center w-1/2 gap-3">
+      <div className="container flex px-4 justify-between h-10">
+        <div className="flex w-1/2 gap-3 mt-1">
           <div className="w-32">
             <Link to="/">
               <svg
@@ -181,21 +218,50 @@ const NavLg = () => {
               </svg>
             </Link>
           </div>
-          <form
-            className="flex w-full items-center gap-3 bg-white px-3 py-1 rounded-md"
-            onSubmit={searchMovieHandler}
-          >
-            <input
-              type="search"
-              className="w-full bg-transparent border-none focus:outline-none"
-              placeholder="Search for movies, events, plays, sports and activities"
-              value={inputMovieName}
-              onChange={(e) => setInputMovieName(e.target.value)}
-            />
-            <button type="submit">
-              <BiSearch />
-            </button>
-          </form>
+          <div className="w-full">
+            <form
+              className="flex items-center w-full gap-3 bg-white px-3 py-1 rounded-t-md "
+              onSubmit={searchMovieHandler}
+            >
+              <input
+                type="search"
+                className="w-full bg-transparent border-none focus:outline-none"
+                placeholder="Search for movies, events, plays, sports and activities"
+                value={inputMovieName}
+                onChange={(e) => setInputMovieName(e.target.value)}
+              />
+              <button type="submit">
+                <BiSearch />
+              </button>
+            </form>
+            <ul
+              className="w-full font-medium gap-3 bg-white z-20 relative"
+              style={{
+                height: !isLoading && fetchedMovies.length > 5 ? "12rem" : "",
+                overflowY:
+                  !isLoading && fetchedMovies.length > 5 ? "scroll" : "",
+              }}
+            >
+              {isLoading ? (
+                <li className="py-1 px-3">Loading...</li>
+              ) : (
+                inputMovieName.length > 0 &&
+                (error || fetchedMovies.length < 1) && (
+                  <li className="py-1 px-3">No results found 😔😔😔</li>
+                )
+              )}
+              {!isLoading &&
+                !error &&
+                fetchedMovies.map((mov) => (
+                  <li
+                    className="py-1 cursor-pointer hover:bg-sky-700 hover:text-white px-3"
+                    onClick={filteredMovieHandler}
+                  >
+                    {mov.title}
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
 
         <div className="flex items-center gap-5">
