@@ -12,7 +12,6 @@ const SignIn = () => {
 
   useEffect(() => {
     setValue(localStorage.getItem("displayName"));
-    console.log(localStorage.getItem("displayName"));
   }, [value]);
   return (
     <div>

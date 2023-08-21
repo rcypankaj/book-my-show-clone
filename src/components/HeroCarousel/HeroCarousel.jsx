@@ -15,7 +15,7 @@ const HeroCarousel = () => {
         method: "GET",
         headers: {
           accept: "application/json",
-          Authorization: "Bearer d9955ee33dc8a6490180fa1af1acec39",
+          Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`,
         },
       };
       try {
